@@ -26,11 +26,15 @@ export async function addProduct(formData: FormData): Promise<void> {
   const data = result.data;
 
   await fs.mkdir('products', { recursive: true });
-  const filePath = `products/${crypto.randomUUID()}-${data.file.name}`;
+  //create a file path for the product
+  const filePath = `products/${crypto.randomUUID()}-${data.file.name}`; //having random ID to avoid conflicts
+  //save the file to the file path
   await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
 
   await fs.mkdir('public/products', { recursive: true });
+  //create an image path for the product
   const imagePath = `/products/${crypto.randomUUID()}-${data.image.name}`;
+  //save the image to the image path in public folder
   await fs.writeFile(
     `public${imagePath}`,
     Buffer.from(await data.image.arrayBuffer())
