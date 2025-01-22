@@ -5,6 +5,11 @@ import { z } from 'zod';
 import fs from 'fs/promises';
 import { redirect } from 'next/navigation';
 
+// const fileSchema = z.object({
+//   name: z.string().nonempty({ message: 'Required' }),
+//   size: z.number().min(1, { message: 'File is required' }),
+//   type: z.string().nonempty(),
+// });
 const fileSchema = z.instanceof(File, { message: 'Required' });
 const imageSchema = fileSchema.refine(
   (file) => file.size === 0 || file.type.startsWith('image/')
@@ -18,10 +23,10 @@ const addSchema = z.object({
   image: imageSchema.refine((file) => file.size > 0, 'Required'),
 });
 
-export async function addProduct(formData: FormData): Promise<void> {
+export async function addProduct(prevState: unknown, formData: FormData) {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
-    throw new Error(JSON.stringify(result.error.formErrors.fieldErrors));
+    return result.error.formErrors.fieldErrors;
   }
   const data = result.data;
 
