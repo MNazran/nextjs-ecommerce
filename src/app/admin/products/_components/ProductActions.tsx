@@ -1,6 +1,12 @@
+'use client';
+
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { startTransition } from 'react';
-import { toggleProductAvailability } from '../../_actions/products';
+import { useTransition } from 'react';
+import {
+  deleteProduct,
+  toggleProductAvailability,
+} from '../../_actions/products';
+import { useRouter } from 'next/navigation';
 
 export function ActiveToggleDropdownItem({
   id,
@@ -9,11 +15,15 @@ export function ActiveToggleDropdownItem({
   id: string;
   isAvailableForPurchase: boolean;
 }) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter(); //easier by refreshing the page
   return (
     <DropdownMenuItem
+      disabled={isPending}
       onClick={() => {
         startTransition(async () => {
           await toggleProductAvailability(id, !isAvailableForPurchase);
+          router.refresh();
         });
       }}
     >
@@ -22,4 +32,26 @@ export function ActiveToggleDropdownItem({
   );
 }
 
-export function DeleteDropdownItem() {}
+export function DeleteDropdownItem({
+  id,
+  disabled,
+}: {
+  id: string;
+  disabled: boolean;
+}) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  return (
+    <DropdownMenuItem
+      disabled={disabled || isPending}
+      onClick={() => {
+        startTransition(async () => {
+          await deleteProduct(id);
+          router.refresh();
+        });
+      }}
+    >
+      Delete
+    </DropdownMenuItem>
+  );
+}
