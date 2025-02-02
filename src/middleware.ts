@@ -13,7 +13,6 @@ export async function middleware(req: NextRequest) {
 async function isAuthenticated(req: NextRequest) {
   const authHeader =
     req.headers.get('authorization') || req.headers.get('Authorization');
-  console.log('Auth Header:', authHeader);
 
   if (authHeader == null) {
     return false;
