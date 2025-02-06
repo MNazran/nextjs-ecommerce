@@ -31,7 +31,7 @@ export default function HomePage() {
 
 type ProductGridSectionProps = {
   title: string;
-  productsFetcher: () => Promise<Product[]>; // This is a function that returns a promise
+  productsFetcher: () => Promise<Product[]>; //a function that returns a promise
 };
 
 function ProductGridSection({
