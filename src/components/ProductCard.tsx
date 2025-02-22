@@ -9,12 +9,14 @@ import {
 } from './ui/card';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ProductCardProps {
   name: string;
   priceInCents: number;
   description: string;
-  id: number;
+  id: string;
+  imagePath: string;
 }
 
 export function ProductCard({
@@ -22,9 +24,13 @@ export function ProductCard({
   priceInCents,
   description,
   id,
+  imagePath,
 }: ProductCardProps) {
   return (
     <Card>
+      <div className='relative w-full h-auto aspect-video'>
+        <Image src={imagePath} fill alt={name} />
+      </div>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{formatCurrency(priceInCents / 100)}</CardDescription>
