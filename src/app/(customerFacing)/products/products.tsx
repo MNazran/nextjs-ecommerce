@@ -7,6 +7,7 @@ function getProducts() {
     where: {
       isAvailableForPurchase: true,
     },
+    orderBy: { name: 'asc' },
   });
 }
 export default function ProductPage() {
