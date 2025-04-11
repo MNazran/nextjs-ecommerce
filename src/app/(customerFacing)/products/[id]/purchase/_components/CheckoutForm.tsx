@@ -1,5 +1,6 @@
 'use client';
 
+import { userOrderExists } from '@/app/action/orders';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,6 +13,7 @@ import {
 import { formatCurrency } from '@/lib/formatters';
 import {
   Elements,
+  LinkAuthenticationElement,
   PaymentElement,
   useElements,
   useStripe,
@@ -22,6 +24,7 @@ import { FormEvent, useState } from 'react';
 
 type CheckoutFormProps = {
   product: {
+    id: string;
     imagePath: string;
     name: string;
     priceInCents: number;
@@ -57,26 +60,42 @@ export function CheckoutForm({ product, clientSecret }: CheckoutFormProps) {
         </div>
       </div>
       <Elements options={{ clientSecret }} stripe={stripePromise}>
-        <Form priceInCents={product.priceInCents} />
+        <Form priceInCents={product.priceInCents} productId={product.id} />
       </Elements>
     </div>
   );
 }
 
-function Form({ priceInCents }: { priceInCents: number }) {
+function Form({
+  priceInCents,
+  productId,
+}: {
+  priceInCents: number;
+  productId: string;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
+  const [email, setEmail] = useState<string>();
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (stripe == null || elements == null) return;
+    if (stripe == null || elements == null || email == null) return;
 
     setIsLoading(true);
 
     //Check for existing order
+    const orderExist = await userOrderExists(email, productId);
+
+    if (orderExist) {
+      setErrorMessage(
+        'You already have an order for this product. Try downloading it from My Orders page'
+      );
+      setIsLoading(false);
+      return;
+    }
 
     stripe
       .confirmPayment({
@@ -108,6 +127,9 @@ function Form({ priceInCents }: { priceInCents: number }) {
         </CardHeader>
         <CardContent>
           <PaymentElement />
+          <div className='mt-4'>
+            <LinkAuthenticationElement onChange={(e) => e.value.email} />
+          </div>
         </CardContent>
         <CardFooter>
           <Button
