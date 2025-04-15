@@ -1,6 +1,8 @@
+import { Button } from '@/components/ui/button';
 import db from '@/db/db';
 import { formatCurrency } from '@/lib/formatters';
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Stripe from 'stripe';
 
@@ -47,6 +49,13 @@ export default async function SuccessPage({
           <div className='line-clamp-3 text-muted-foreground'>
             {product.description}
           </div>
+          <Button className='mt-4' size='lg' asChild>
+            {isSuccess ? (
+              <a></a>
+            ) : (
+              <Link href={`/products/${product.id}/purchase`}>Try Again</Link>
+            )}
+          </Button>
         </div>
       </div>
     </div>
